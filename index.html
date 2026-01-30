@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReliefFinder | Express</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 480px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header { margin-bottom: 32px; text-align: left; }
+        h1 { font-size: 28px; margin: 0; font-weight: 800; letter-spacing: -0.5px; }
+        p { color: #94a3b8; margin: 8px 0 0; font-size: 14px; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .action-card {
+            background: var(--card-bg);
+            border: 1px solid #334155;
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .action-card:active { transform: scale(0.95); background: #334155; }
+
+        .hospital-card { 
+            grid-column: span 2; 
+            border-left: 4px solid var(--danger); 
+            background: linear-gradient(to right, #2d1b1b, var(--card-bg));
+        }
+
+        .icon { font-size: 32px; }
+        .label { font-weight: 600; font-size: 15px; }
+
+        .sos-footer {
+            margin-top: auto;
+            padding: 40px 0 20px;
+        }
+
+        .sos-btn {
+            background: var(--danger);
+            color: white;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            padding: 20px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
+        }
+
+        #status-bar {
+            text-align: center;
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+    <header>
+        <h1>ReliefFinder</h1>
+        <p>Immediate help based on your location</p>
+    </header>
+
+    <div class="grid">
+        <div class="action-card hospital-card" onclick="locate('hospital')">
+            <span class="icon">🏥</span>
+            <span class="label">Nearest Hospital</span>
+        </div>
+        
+        <div class="action-card" onclick="locate('police station')">
+            <span class="icon">🚓</span>
+            <span class="label">Police</span>
+        </div>
+
+        <div class="action-card" onclick="locate('pharmacy')">
+            <span class="icon">💊</span>
+            <span class="label">Pharmacy</span>
+        </div>
+
+        <div class="action-card" onclick="locate('fire station')">
+            <span class="icon">🚒</span>
+            <span class="label">Fire Station</span>
+        </div>
+
+        <div class="action-card" onclick="locate('atm')">
+            <span class="icon">🏧</span>
+            <span class="label">ATM</span>
+        </div>
+    </div>
+
+    <div id="status-bar">GPS System Ready</div>
+
+    <div class="sos-footer">
+        <a href="tel:911" class="sos-btn">🚨 EMERGENCY CALL</a>
+    </div>
+</div>
+
+<script>
+    function locate(type) {
+        const status = document.getElementById('status-bar');
+        status.innerText = "Finding nearest " + type + "...";
+        
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                // Launching Google Maps with the specific coordinates and search term
+                const url = `https://www.google.com/maps/search/${type}/@${lat},${lon},15z`;
+                window.open(url, '_blank');
+                status.innerText = "GPS Ready";
+            }, (err) => {
+                status.innerText = "Error: Please allow location access.";
+            });
+        } else {
+            status.innerText = "Geolocation not supported.";
+        }
+    }
+</script>
+
+</body>
+</html>
